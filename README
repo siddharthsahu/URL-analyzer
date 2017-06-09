@@ -1,0 +1,18 @@
+URL Analyzer
+
+This project tries to fetch all the information one can obtain from a given URL
+
+This code can be used to refer for following purpose:
+1. How to use classes in Python
+2. Python doesn't have 'switch' statement. This code uses dictionary to implement switch behavior
+3. How to take console input in Python
+4. How to use 'get' to access dictionary elements and use default if key is not found
+5. How to use 'urlparse' library
+
+TODO
+1. Check if website is up or not
+2. Format output using tab
+
+Author
+Siddharth Sahu
+sahu.siddharth4@gmail.com
