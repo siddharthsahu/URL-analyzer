@@ -1,4 +1,6 @@
 from urlparse import urlparse
+import socket
+import subprocess
 
 
 class Analyzer:
@@ -7,6 +9,16 @@ class Analyzer:
     def __init__(self, url):
         self.url = url
         self.parsed_url = urlparse(url)
+        if self.parsed_url.netloc is not None or self.parsed_url.netloc != "":
+            self.ip_add = socket.gethostbyname(self.parsed_url.netloc)
+        else:
+            self.ip_add = None
+
+    def get_ip_add(self):
+        if self.ip_add is not None:
+            print "IP Address: " + self.ip_add
+        else:
+            print "IP Address: Unable to resolve IP address"
 
     def print_intro(self):
         print "Analysis of URL: " + self.url + "\n"
@@ -19,9 +31,9 @@ class Analyzer:
 
         # python doesn't have switch statement. This is standard way to implement switch behavior
         switcher = {
-            'http': "Protocol: This is HTTP",
-            'https': "Protocol: This is HTTPS",
-            'ftp': "Protocol: This is FTP"
+            'http': "Protocol: HTTP",
+            'https': "Protocol: HTTPS",
+            'ftp': "Protocol: FTP"
         }
         print switcher.get(self.parsed_url.scheme, "Protocol: Given protocol is not recognized")
 
@@ -29,6 +41,16 @@ class Analyzer:
         if self.parsed_url.netloc is None:
             print "Domain: Unable to identify domain name"
         print "Domain: " + self.parsed_url.netloc
+
+    def analyse_site_status(self):
+        ping_output = subprocess.check_output(["ping", "-c1", self.parsed_url.netloc])
+        if "unknown host" in ping_output:
+            print "Page status: Unable to resolve domain"
+        elif "1 received" in ping_output:
+            print "Page status: Page is up and running"
+        else:
+            print "Page status: Page is down"
+
 
     def analyze_path(self):
         if self.parsed_url.path is None or self.parsed_url.path == "":
@@ -48,14 +70,22 @@ class Analyzer:
         else:
             print "Query Arguments: " + self.parsed_url.query
 
+    def obtain_whois_info(self):
+        if self.parsed_url.netloc is None:
+            print "Whois information: Unable to retrieve information"
+        whois_output = subprocess.check_output(["whois", self.parsed_url.netloc.split(".")[1]])
+        print "Whois information: " + whois_output
 
     def perform_analysis(self):
         self.print_intro()
         self.analyze_protocol()
         self.analyze_domain()
+        self.analyse_site_status()
+        self.get_ip_add()
         self.analyze_path()
         self.analyze_port()
         self.analyze_query()
+        self.obtain_whois_info()
 
 
 class UserInterface:
